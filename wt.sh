@@ -64,7 +64,16 @@ create_worktree() {
     echo "  Branch:   $branch_name"
     echo ""
     echo "Start developing:"
-    echo "  cd $(cd $worktree_path && pwd)"
+
+    local cd_command="cd \"$(cd $worktree_path && pwd)\""
+
+    echo "  $cd_command"
+
+    local cd_command="cd \"$(cd $worktree_path && pwd)\""
+    if command -v pbcopy >/dev/null; then
+        echo "$cd_command" | pbcopy
+        echo "✓ Copied to clipboard: $cd_command" >&2
+    fi
 }
 
 delete_worktree() {
@@ -104,6 +113,10 @@ delete_worktree() {
     fi
 
     echo "✓ Worktree removed successfully"
+
+    echo "Removing branch $branch_name..."
+    git branch -d "$branch_name"
+    echo "✓ Branch $branch_name removed successfully"
 }
 
 list_worktrees() {
