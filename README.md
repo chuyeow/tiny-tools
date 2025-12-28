@@ -1,6 +1,6 @@
 # tiny-tools
 
-A collection of small, portable shell utilities.
+A collection of small utilities.
 
 ## wt.sh
 
@@ -12,7 +12,7 @@ Git worktree management with automated setup and cleanup.
 ln -s ~/code/tiny-tools/wt.sh ~/.local/bin/wt
 ```
 
-Then use `wt` anywhere in a git repository.
+Then use `wt` _anywhere_ in a git repository.
 
 ### Usage
 
@@ -36,11 +36,3 @@ Creates a worktree at `../projectname.wt/improve-login/` and copies:
 wt rm improve-login
 ```
 
-Prompts for confirmation before removing.
-
-### How it works
-
-- Automatically detects the git repository root
-- Derives the project name from the repository directory
-- Ensures worktree paths are correct from any subdirectory
-- Works in any git repository without configuration
