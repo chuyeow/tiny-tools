@@ -1,8 +1,8 @@
 # tiny-tools
 
-A collection of small utilities.
+A collection of handy, small utilities.
 
-## wt.sh
+## [wt.sh](wt.sh)
 
 Git worktree management with automated setup and cleanup.
 
@@ -35,4 +35,11 @@ Creates a worktree at `../projectname.wt/improve-login/` and copies:
 ```bash
 wt rm improve-login
 ```
+
+**Switch to a worktree:**
+```bash
+wt switch improve-login
+```
+
+Copies a `cd` command to your clipboard so you can paste it in your terminal to jump to the worktree directory. Use `wt switch main` to switch back to the main repository.
 
