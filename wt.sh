@@ -69,7 +69,6 @@ create_worktree() {
 
     echo "  $cd_command"
 
-    local cd_command="cd \"$(cd $worktree_path && pwd)\""
     if command -v pbcopy >/dev/null; then
         echo "$cd_command" | pbcopy
         echo "✓ Copied to clipboard: $cd_command" >&2
