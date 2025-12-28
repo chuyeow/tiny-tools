@@ -132,13 +132,17 @@ switch_worktree() {
                 break
             fi
         done < <(git worktree list --porcelain)
+
+        if [[ -z "$worktree_path" ]]; then
+            echo "Error: Could not find main worktree" >&2
+            exit 1
+        fi
     else
         worktree_path="${WORKTREE_BASE}/${branch_name}"
-    fi
-
-    if [[ ! -d "$worktree_path" ]]; then
-        echo "Error: Worktree not found at $worktree_path" >&2
-        exit 1
+        if [[ ! -d "$worktree_path" ]]; then
+            echo "Error: Worktree not found at $worktree_path" >&2
+            exit 1
+        fi
     fi
 
     local cd_command="cd \"$(cd $worktree_path && pwd)\""
