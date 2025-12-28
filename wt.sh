@@ -127,7 +127,7 @@ switch_worktree() {
         while IFS= read -r line; do
             if [[ "$line" =~ ^worktree ]]; then
                 current_worktree="${line#worktree }"
-            elif [[ "$line" =~ ^branch\ refs/heads/main$ ]]; then
+            elif [[ "$line" =~ ^branch\ refs/heads/(main|master)$ ]]; then
                 worktree_path="$current_worktree"
                 break
             fi
@@ -146,8 +146,13 @@ switch_worktree() {
     fi
 
     local cd_command="cd \"$(cd $worktree_path && pwd)\""
-    echo "$cd_command" | pbcopy
-    echo "✓ Copied to clipboard: $cd_command" >&2
+    if command -v pbcopy >/dev/null; then
+        echo "$cd_command" | pbcopy
+        echo "✓ Copied to clipboard: $cd_command" >&2
+    else
+        echo "$cd_command"
+        echo "✓ Command printed (pbcopy not available)" >&2
+    fi
 }
 
 # Main
