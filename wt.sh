@@ -9,7 +9,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cd "$GIT_ROOT"
 PROJECT_NAME=$(basename "$GIT_ROOT")
 WORKTREE_BASE="../${PROJECT_NAME}.wt"
-ENV_FILES=(".env" "node_modules" ".claude/settings.local.json")
+ENV_FILES=(".env" "node_modules" ".claude/settings.local.json" ".codex")
 
 show_usage() {
     local script_name=$(basename $0)
