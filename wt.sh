@@ -1,15 +1,40 @@
 #!/bin/bash
 # Manage git worktrees with automated setup and cleanup
-# Usage: wt.sh <add|rm|ls> [branch-name]
+# Usage: wt.sh <add|rm|ls|switch> [branch-name]
 
 set -e
 
-# Detect git repository root and derive project name
-GIT_ROOT=$(git rev-parse --show-toplevel)
+# Detect current worktree root, then derive worktree base from the primary worktree
+GIT_ROOT="$(git rev-parse --show-toplevel)"
 cd "$GIT_ROOT"
-PROJECT_NAME=$(basename "$GIT_ROOT")
-WORKTREE_BASE="../${PROJECT_NAME}.wt"
+
+GIT_COMMON_DIR="$(git rev-parse --git-common-dir)"
+GIT_COMMON_DIR_ABS="$(cd "$GIT_COMMON_DIR" && pwd -P)"
+
+if [[ "$(basename "$GIT_COMMON_DIR_ABS")" != ".git" ]]; then
+    echo "Error: Unexpected git common dir: $GIT_COMMON_DIR_ABS" >&2
+    exit 1
+fi
+
+MAIN_WORKTREE_ROOT="$(cd "$GIT_COMMON_DIR_ABS/.." && pwd -P)"
+PROJECT_NAME="$(basename "$MAIN_WORKTREE_ROOT")"
+WORKTREE_BASE="$(dirname "$MAIN_WORKTREE_ROOT")/${PROJECT_NAME}.wt"
 ENV_FILES=(".env" "node_modules" ".claude/settings.local.json" ".codex")
+
+copy_or_print() {
+    local text="$1"
+
+    if command -v pbcopy >/dev/null; then
+        if printf "%s" "$text" | pbcopy; then
+            echo "✓ Copied to clipboard: $text" >&2
+            return 0
+        fi
+        echo "Warning: pbcopy failed; printing command" >&2
+    fi
+
+    echo "$text"
+    echo "✓ Command printed (clipboard unavailable)" >&2
+}
 
 show_usage() {
     local script_name=$(basename $0)
@@ -65,14 +90,10 @@ create_worktree() {
     echo ""
     echo "Start developing:"
 
-    local cd_command="cd \"$(cd $worktree_path && pwd)\""
+    local cd_command="cd \"$(cd "$worktree_path" && pwd -P)\""
 
     echo "  $cd_command"
-
-    if command -v pbcopy >/dev/null; then
-        echo "$cd_command" | pbcopy
-        echo "✓ Copied to clipboard: $cd_command" >&2
-    fi
+    copy_or_print "$cd_command" >/dev/null
 }
 
 delete_worktree() {
@@ -157,14 +178,8 @@ switch_worktree() {
         fi
     fi
 
-    local cd_command="cd \"$(cd $worktree_path && pwd)\""
-    if command -v pbcopy >/dev/null; then
-        echo "$cd_command" | pbcopy
-        echo "✓ Copied to clipboard: $cd_command" >&2
-    else
-        echo "$cd_command"
-        echo "✓ Command printed (pbcopy not available)" >&2
-    fi
+    local cd_command="cd \"$(cd "$worktree_path" && pwd -P)\""
+    copy_or_print "$cd_command"
 }
 
 # Main
